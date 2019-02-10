@@ -71,16 +71,34 @@ function timeConverter(a){
 	return time;
 }
 
-function get_embed_link(url_v,name_v) {
-	if(url_v.includes('youtube.com/watch?v=')){
-		var tex = '<div id ="'+name_v+'"><iframe src="'+url_v.replace('watch?v=','embed/')+'" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>\n'
-	}
-	else{
-		var tex = '<a href="'+url_v+'">'+name_v+"</a>\n";
-	}
+function left_of_string(ss,sbs) {
+	return ss.substring(0,ss.indexOf(sbs));
+}
+
+function right_of_string(ss,sbs) {
+	return ss.substring(ss.indexOf(sbs)+sbs.length);
+}
+
+function get_embed_link(href) {
+	var tex = "https://www.youtube.com/embed/";
+		if(href.includes("list="))
+		{
+			tex+='playlist?list=';
+			tex+=right_of_string(href,'list=')
+		}
+		else
+		{
+			tex+=right_of_string(href,'watch?v=');
+		}
 	return tex;
 }
 
+function get_embed_tag(url_v,name_v) {
+	if(url_v.includes('youtube.com/watch?v=') || url_v.includes('youtube.com/playlist?list=')){
+		var tex = '<div id ="'+name_v+'"><iframe src="'+get_embed_link(url_v)+'" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>\n'
+	}
+	return tex;
+}
 function handleRequests(request, sender, callback){
 	switch(request.message) {
 	case "activate":
@@ -120,7 +138,11 @@ function handleRequests(request, sender, callback){
 					text += "["+request.urls[i].title+"]("+request.urls[i].url+")\n";
 					break;
 				case "6":
-					text += get_embed_link(request.urls[i].url,request.urls[i].title);
+					var lnk = get_embed_tag(request.urls[i].url,request.urls[i].title);
+					if(!text.includes(lnk)){
+						text += lnk;
+					}
+					
 					break;
 				}
 			}
