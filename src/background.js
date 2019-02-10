@@ -71,6 +71,16 @@ function timeConverter(a){
 	return time;
 }
 
+function get_embed_link(url_v,name_v) {
+	if(url_v.includes('youtube.com/watch?v=')){
+		var tex = '<div id ="'+name_v+'"><iframe src="'+url_v.replace('watch?v=','embed/')+'" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>\n'
+	}
+	else{
+		var tex = '<a href="'+url_v+'">'+name_v+"</a>\n";
+	}
+	return tex;
+}
+
 function handleRequests(request, sender, callback){
 	switch(request.message) {
 	case "activate":
@@ -108,6 +118,9 @@ function handleRequests(request, sender, callback){
 					break;
 				case "5":
 					text += "["+request.urls[i].title+"]("+request.urls[i].url+")\n";
+					break;
+				case "6":
+					text += get_embed_link(request.urls[i].url,request.urls[i].title);
 					break;
 				}
 			}
